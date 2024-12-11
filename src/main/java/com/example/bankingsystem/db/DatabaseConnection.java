@@ -41,16 +41,26 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/BankingSystem?allowPublicKeyRetrieval=true&useSSL=false";
+    private static final String URL = "jdbc:mysql://localhost:3306/BankingSystem?allowPublicKeyRetrieval=true&useSSL=true";
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
     public static Connection getConnection() {
         Connection conn = null;
         try {
-            // Establish the connection to MySQL
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            // Establish the connection without specifying the database
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", USER, PASSWORD);
             System.out.println("Database connection established successfully.");
+
+            // Create the database if it does not exist
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS BankingSystem;");
+                System.out.println("Database 'BankingSystem' created or already exists.");
+            }
+
+            // Now connect to the actual database
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("Connected to the BankingSystem database.");
 
             // Initialize the database schema
             initializeDatabase(conn);
@@ -61,6 +71,7 @@ public class DatabaseConnection {
         }
         return conn;
     }
+
 
     private static void initializeDatabase(Connection conn) {
         try (Statement stmt = conn.createStatement()) {

@@ -1,10 +1,12 @@
 package com.example.bankingsystem.controller;
 
+import com.example.bankingsystem.model.Transaction;
 import com.example.bankingsystem.service.BankingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/banking")
@@ -49,7 +51,7 @@ public class BankingController {
 
     // Get Transaction History
     @GetMapping("/transactions")
-    public String getTransactionHistory(@RequestParam int accountId) throws SQLException {
+    public List<Transaction> getTransactionHistory(@RequestParam int accountId) throws SQLException {
         return bankingService.getTransactionHistory(accountId);
     }
 }

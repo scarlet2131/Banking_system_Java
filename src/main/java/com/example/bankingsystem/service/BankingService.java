@@ -1,12 +1,12 @@
 package com.example.bankingsystem.service;
 
 import com.example.bankingsystem.db.DatabaseConnection;
+import com.example.bankingsystem.model.Transaction;
 //import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 //@Service
 public class BankingService {
@@ -78,8 +78,8 @@ public class BankingService {
         }
     }
 
-    public String getTransactionHistory(int accountId) throws SQLException {
-        StringBuilder history = new StringBuilder();
+    public List<Transaction> getTransactionHistory(int accountId) throws SQLException {
+        List<Transaction> transactionHistory = new ArrayList<>();
         String query = "SELECT transaction_id, transaction_type, amount, transaction_time, to_account " +
                 "FROM Transactions WHERE from_account = ? ORDER BY transaction_time DESC";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -87,17 +87,20 @@ public class BankingService {
             stmt.setInt(1, accountId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    history.append("Transaction ID: ").append(rs.getInt("transaction_id"))
-                            .append(", Type: ").append(rs.getString("transaction_type"))
-                            .append(", Amount: ").append(rs.getDouble("amount"))
-                            .append(", To Account: ").append(rs.getInt("to_account"))
-                            .append(", Timestamp: ").append(rs.getTimestamp("transaction_time"))
-                            .append("\n");
+                    int transactionId = rs.getInt("transaction_id");
+                    String transactionType = rs.getString("transaction_type");
+                    double amount = rs.getDouble("amount");
+                    Timestamp transactionTime = rs.getTimestamp("transaction_time");
+                    int toAccount = rs.getInt("to_account");
+
+                    Transaction transaction = new Transaction(transactionId, accountId, toAccount, amount, transactionType, transactionTime);
+                    transactionHistory.add(transaction);
                 }
             }
         }
-        return history.toString();
+        return transactionHistory;
     }
+
 
     // Internal methods for direct deposit and withdrawal during a transfer
     private void withdrawMoneyInternal(Connection conn, int accountId, double amount) throws SQLException {

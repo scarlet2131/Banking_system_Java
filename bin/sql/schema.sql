@@ -28,10 +28,7 @@ CREATE TABLE IF NOT EXISTS Transactions (
     );
 
 INSERT INTO Clients (name, email) VALUES ('John Doe', 'john@example.com'), ('Jane Smith', 'jane@example.com');
-INSERT INTO Accounts (client_id, account_type, balance)
-VALUES (1, 'Savings', 1000.00), (2, 'Checking', 500.00);
-INSERT INTO Accounts (client_id, account_type, balance)
-VALUES (1, 'Savings', 1000.00), (2, 'Checking', 500.00);
+
 INSERT INTO Accounts (client_id, account_type, balance)
 VALUES (1, 'Savings', 1000.00), (2, 'Checking', 500.00);
 
